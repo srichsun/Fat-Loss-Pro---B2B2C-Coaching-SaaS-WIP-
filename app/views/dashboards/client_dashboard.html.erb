@@ -1,0 +1,14 @@
+<h1>My Training Plan</h1>
+
+<section class="my-orders">
+  <h2>Orders & Billing</h2>
+  <% @my_orders.each do |order| %>
+    <div class="order-card">
+      <p><%= order.description %> - $<%= order.amount %></p>
+      <p>Status: <%= order.status.upcase %></p>
+      <% if order.pending? %>
+        <%= link_to "Pay Now", order_path(order), class: "btn-primary" %>
+      <% end %>
+    </div>
+  <% end %>
+</section>

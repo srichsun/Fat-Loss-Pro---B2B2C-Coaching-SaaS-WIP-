@@ -1,4 +1,10 @@
 Rails.application.routes.draw do
+  root "dashboards#show" # Redirect to login if not authenticated
+  
+  # Single entry point for dashboard
+  resource :dashboard, only: [:show]
+
+  get "dashboards/show"
   # Authentication Routes
   get  "login",  to: "sessions#new"
   post "login",  to: "sessions#create"
@@ -17,8 +23,6 @@ Rails.application.routes.draw do
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
-  # Root page to list all coaches (Landing Page)
-  root "tenants#index"
 
   # Individual coach room (SaaS Tenant Space)
   resources :tenants, only: [:show]
