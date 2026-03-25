@@ -1,5 +1,6 @@
 class Tenant < ApplicationRecord
   has_many :users, dependent: :destroy
+  has_many :orders
 
   # Automatically generate a unique token for new coaches
   before_create :generate_invitation_token

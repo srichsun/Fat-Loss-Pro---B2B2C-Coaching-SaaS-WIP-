@@ -27,6 +27,7 @@ Rails.application.routes.draw do
 
   # Individual coach room (SaaS Tenant Space)
   resources :tenants, only: [:show]
+  resources :orders
 
   # Define a dynamic parameter named :subdomain
   # 'as: :coach_room' generates the 'coach_room_path' helper method
