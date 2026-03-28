@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_03_25_081734) do
+ActiveRecord::Schema[8.2].define(version: 2026_03_27_132303) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -19,12 +19,14 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_25_081734) do
     t.bigint "client_id", null: false
     t.bigint "coach_id", null: false
     t.datetime "created_at", null: false
-    t.text "description"
+    t.text "description", null: false
+    t.string "idempotency_key"
     t.integer "status", default: 0, null: false
     t.bigint "tenant_id", null: false
     t.datetime "updated_at", null: false
     t.index ["client_id"], name: "index_orders_on_client_id"
     t.index ["coach_id"], name: "index_orders_on_coach_id"
+    t.index ["idempotency_key"], name: "index_orders_on_idempotency_key", unique: true
     t.index ["tenant_id", "client_id", "status"], name: "idx_orders_on_tenant_client_status"
     t.index ["tenant_id"], name: "index_orders_on_tenant_id"
   end
