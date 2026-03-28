@@ -1,96 +1,81 @@
+# FlashSale Pro - High-Concurrency Influencer Launchpad
 
-# Fat Loss Pro - B2B2C Coaching SaaS
-
-### Status: 🚧 Work In Progress (Phase 2)
+### Status: 🚧 Phase 2: High-Concurrency Core (In Progress)
+Current Progress: Successfully implemented Pessimistic Locking and Redis Caching for flash sale scenarios.
 
 ### 📖 [Detailed Technical Documentation & Wiki](https://github.com/srichsun/fatloss-pro-saas/wiki)
-### 📖 [詳細技術文件與開發決策請參考專案 Wiki](https://github.com/srichsun/fatloss-pro-saas/wiki)
 
 -----
 
 ### 🚀 Project Vision (專案願景)
 
-**English:**
-Fat Loss Pro is a subscription-based management platform tailored for fitness coaches and personal studios. Utilizing a **B2B2C (Business-to-Business-to-Consumer)** architecture, it empowers coaches with independent digital classrooms to sell fat-loss programs and track student health metrics seamlessly.
-
-**中文摘要：**
-Fat Loss Pro 是一個專為「健身教練與個人工作室」打造的 B2B2C 訂閱制管理平台，協助教練建立獨立數位教室，進行課程銷售與學員數據追蹤。
+**Fat Loss Pro** 是一個專為健身網紅打造的「極速快閃銷售」平台。不同於一般的管理系統，本專案針對「萬人瞬間湧入搶購」的場景進行了深度優化，確保在極高併發（High-Concurrency）下，系統依然能保持**庫存精準、反應迅速、穩定不當機**。
 
 ---
 
-### 🛠️ Technical Stack & Philosophy (技術選型與核心理念)
+### 🛠️ Technical Stack (技術選型)
 
-This project leverages **Rails 8 (Main Branch)**, focusing on "Minimalist Infrastructure, High Performance, and Security."
-(本專案採用 Rails 8 架構，專注於極簡基礎設施、高性能與安全性。)
-
-* **Rails 8 "Postgres-only" Stack**: Utilizes `Solid Queue` and `Solid Cache` to eliminate Redis dependencies, reducing operational complexity. (採用 Solid Queue/Cache 移除對 Redis 的依賴，降低運維複雜度。)
-* **Multi-tenancy Isolation**: Implements data isolation via `tenant_id` and Controller Scoping to prevent **IDOR (Insecure Direct Object Reference)** vulnerabilities. (透過 tenant_id 實作資料隔離，杜絕 IDOR 安全漏洞。)
-* **Hand-rolled Auth**: Opted for a lightweight authentication flow via `has_secure_password` over Devise for maximum control and security transparency. (捨棄套件，採用原生方式實作輕量、高掌控度的身分驗證。)
-* **Modern Frontend**: Combines **Tailwind CSS** with **Hotwire (Turbo/Stimulus)** for an SPA-like user experience. (結合 Tailwind 與 Hotwire，提供如單頁式應用程式般的流暢體驗。)
+* **Framework**: Rails 8.2 (Edge)
+* **High-Concurrency Core**: 
+    * **Database**: PostgreSQL with **Pessimistic Locking** (`SELECT ... FOR UPDATE`).
+    * **Caching**: **Redis** (Cache-Aside Pattern) for high-speed inventory reads.
+    * **Async Jobs**: **Active Job** (Async/Solid Queue) for non-blocking notification delivery.
+* **Frontend**: **Hotwire (Turbo/Stimulus)** + **Tailwind CSS** (SPA-like performance).
+* **Architecture**: **Multi-tenancy** isolation for scalable B2B2C coaching business.
 
 -----
 
-### 🚀 Technical Highlights (技術亮點)
+### 🛡️ High-Concurrency Highlights (高併發技術亮點)
 
-#### 1. Row-Level Data Isolation (資料隔離與安全性)
+#### 1. Zero-Overselling Logic (防超賣機制)
+在高併發下，最怕「10 個名額賣給 11 個人」。
+* **Pessimistic Locking**: 透過 `@campaign.lock!` 實作資料庫列級鎖定（Row-Level Lock），確保扣庫存的原子性 (Atomicity)。
+* **Transaction Integrity**: 結合資料庫事務，確保「扣庫存」與「訂單建立」若有一方失敗則全數回滾。
 
-* **Scoped Querying**: Encapsulated `current_tenant` logic at the controller level. All data queries originate from the tenant to prevent cross-tenant access risks at the architectural level. (在 Controller 層級封裝租戶邏輯，所有查詢皆從租戶出發，從底層杜絕跨租戶存取風險。)
-* **Transactional Setup**: Utilizes **Database Transactions** during coach registration to ensure atomic creation of both `Tenant` (Organization) and `User` (Admin). (使用資料庫事務確保組織與管理員帳號同時建立成功。)
 
-#### 2. Financial & Order Automation (金流與訂單自動化)
+#### 2. Redis Performance Optimization (效能優化)
+為了保護資料庫不被瞬間讀取流量沖垮：
+* **Cache-Aside Pattern**: 將剩餘庫存同步至 Redis 記憶體快取。
+* **Result**: 讀取庫存的反應速度從毫秒級降至微秒級，大幅降低資料庫 I/O 負擔。
 
-* **Precision Handling**: Leverages Rails `Attributes API` for monetary calculations to ensure mathematical precision. (使用 Attributes API 處理金額，確保財務運算的精確度。)
-* **Idempotency & Webhooks**: Integrated **Stripe API** with Webhooks and idempotency mechanisms to ensure accurate automated billing and order status synchronization. (整合 Stripe 並實作冪等性機制，確保自動化扣款與訂單狀態同步的準確性。)
+
+#### 3. Non-blocking Notification (響應式解耦)
+下單後的收尾工作不應卡住使用者。
+* **Asynchronous Processing**: 透過 `deliver_later` 將 Email 通知交由背景任務處理。
+* **Responsiveness**: 確保下單主流程在 100ms 內完成回應，提升使用者體驗。
 
 -----
 
 ### 📈 Roadmap (開發進度)
 
 #### **Phase 1: SaaS Foundation (Completed)**
-- [x] **Multi-tenant Architecture**: Tenant/User isolation walls. (實作租戶資料隔離牆)
-- [x] **Custom Auth System**: Session-based lightweight logic. (輕量化驗證邏輯)
-- [x] **Security Scoping**: Enforced checks in `ApplicationController` with RSpec validation. (強制執行租戶安全檢查)
+- [x] **Multi-tenant Architecture**: Tenant/User isolation walls.
+- [x] **Custom Auth System**: Lightweight session-based logic.
 
-#### **Phase 2: Financial Integrity (In Progress)**
-- [x] **Automated Order System**: Coach invoicing & student enrollment workflows. (自動化開單與入班流程)
-- [ ] **Stripe Integration**: Automated payments & Webhook listeners. (支付整合與監聽)
-- [ ] **Service Objects**: Encapsulating `Orders::PlaceOrderService` for transaction atomicity. (封裝 Service Object 確保交易原子性)
+#### **Phase 2: High-Concurrency Flash Sale (Completed)**
+- [x] **Inventory Locking**: Implementation of `SELECT FOR UPDATE` logic.
+- [x] **Redis Cache Layer**: High-speed stock reading strategy.
+- [x] **Async Emailer**: Decoupled order confirmation workflow.
 
-#### **Phase 4: Real-time Data & Analytics (Planning)**
-- [ ] **Health Dashboard**: Real-time weight tracking charts using Turbo Streams. (利用 Turbo Streams 實作無刷新數據圖表)
-- [ ] **Data Visualization**: Integrating Chart.js for revenue and student progress analytics. (導入數據視覺化展示營收與進度)
-
------
-
-### 🛡️ Documentation (相關技術文件)
-
-Deep design details are documented in the Wiki:
-* [📌 Database Schema Design] (Pending: Update after Phase 2 stabilization)
-* [📌 API Integration & Webhook Guide] (Pending: Update after Stripe testing)
+#### **Phase 3: Financial & Scaling (Planning)**
+- [ ] **Stripe Integration**: Automated payment with Webhook idempotency.
+- [ ] **Real-time Counter**: Live stock updates using **Turbo Streams** over WebSockets.
 
 -----
 
 ### ⚡ Quick Start (快速啟動)
 
 #### 1. Setup Environment
-Ensure PostgreSQL is installed on your local machine.
-
 ```bash
-# Clone the repository
-git clone [your-repo-link]
-cd fat_loss_pro
+# Start Redis Service
+brew services start redis
 
-# Install dependencies
-bundle install
-
-# Setup database
+# Setup database & Migration
 bin/rails db:prepare
 
-# Start development server (Rails + Tailwind + CSS Watch)
-bin/dev
-```
+# Enable Development Caching
+bin/rails dev:cache
 
-#### 2. Running Tests
-```bash
-bundle exec rspec
+# Start all services (Rails + Tailwind + Worker)
+bin/dev
 ```
