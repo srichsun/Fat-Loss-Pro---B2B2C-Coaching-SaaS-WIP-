@@ -1,0 +1,11 @@
+<h2>恭喜您搶購成功！</h2>
+<p>您好 <%= @order.name %>，</p>
+
+<p>我們已收到您的預約資訊：</p>
+<ul>
+  <li>項目：<%= @campaign.title %></li>
+  <li>金額：TWD <%= @campaign.price %></li>
+  <li>聯絡電話：<%= @order.phone %></li>
+</ul>
+
+<p>教練將會盡快與您聯繫。感謝您的參與！</p>

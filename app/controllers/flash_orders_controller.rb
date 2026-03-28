@@ -16,6 +16,9 @@ class FlashOrdersController < ApplicationController
         if @order.save
           # 3. Decrement stock directly within the same lock
           @campaign.update!(remaining_stock: @campaign.remaining_stock - 1)
+
+          # Use deliver_later to send email in background (Asynchronous)
+          OrderMailer.confirmation_email(@order).deliver_later
           
           redirect_to campaign_sale_path(@campaign), notice: "Success! You've secured your spot."
         else

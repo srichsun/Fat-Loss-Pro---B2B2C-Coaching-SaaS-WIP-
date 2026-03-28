@@ -55,7 +55,8 @@ Rails.application.configure do
   # Highlight code that enqueued background job in logs.
   config.active_job.verbose_enqueue_logs = true
 
-  config.active_job.queue_adapter = :solid_queue
+  # 將這行暫時改為 async (不存資料庫，直接在記憶體執行)
+  config.active_job.queue_adapter = :async
 
   # Highlight code that triggered redirect in logs.
   config.action_dispatch.verbose_redirect_logs = true
