@@ -1,3 +1,4 @@
+
 # FlashSale Pro - High-Concurrency Influencer Launchpad
 
 ### Status: 🚧 Phase 2: High-Concurrency Core (In Progress)
@@ -22,6 +23,25 @@ Current Progress: Successfully implemented Pessimistic Locking and Redis Caching
     * **Async Jobs**: **Active Job** (Async/Solid Queue) for non-blocking notification delivery.
 * **Frontend**: **Hotwire (Turbo/Stimulus)** + **Tailwind CSS** (SPA-like performance).
 * **Architecture**: **Multi-tenancy** isolation for scalable B2B2C coaching business.
+
+---
+
+### 🤖 AI-Augmented Development & 10x Velocity (AI 輔助開發與 10 倍速效能)
+
+本專案全面導入 **AI 原生開發工作流 (AI-Native Workflow)**，在確保資深級架構品質的前提下，實現極速交付。
+
+* **10x Efficiency (2 Weeks to 2 Days)**: 
+    By leveraging **Cursor Composer** and custom **AI Guardrails**, I successfully condensed a standard **2-week development cycle into just 2 days**.
+    (透過整合 AI 輔助工作流，將標準 **2 週的開發週期縮短至僅 2 天**，且不影響系統穩定性。)
+* **Architectural Integrity (.cursorrules)**: 
+    Used a rigorous `.cursorrules` configuration to enforce **Rails 8 best practices** and **Clean Code** principles, ensuring AI-generated code meets senior engineering standards.
+    (透過自定義 `.cursorrules` 規範，確保 AI 產出的程式碼嚴格遵循 Rails 8 最佳實踐與 Clean Code 原則。)
+* **AI-Driven Edge Case Testing**: 
+    Utilized AI to identify and simulate complex **Race Conditions**, accelerating the TDD process and achieving high test coverage in record time.
+    (利用 AI 識別並模擬高併發下的邊際案例與競爭危害，以極短時間達成高測試覆蓋率。)
+
+> *"My core competitive advantage is maintaining **senior-level architectural precision** at **startup-level execution speed** through AI orchestration."*
+> (*「我的核心競爭優勢在於：透過 AI 協調，在保持資深級架構精準度的同時，擁有新創等級的執行速度。」*)
 
 -----
 
